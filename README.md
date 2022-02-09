@@ -52,7 +52,7 @@ everything before applys but you skip step 4
 const httpRouter = HttpRouter();
 httpRouter.get('/favicon.ico', (req) => req.res?.status(204).end()); // Disable favicon
 httpRouter.use('/livemic',HttpRouter.static('./public')); // Will serve everything that is in the public subfolder of this service.
-httpRouter.use('/', (req) => httpProxy.web(req, req?.res); // Will serve everything that is returned by nextKast MobileVT
+httpRouter.use('/', (req) => proxyServer.web(req, req?.res); // Will serve everything that is returned by nextKast MobileVT
 
 // Single Page Apps are also supported please ask the support about that.
 const httpsServer = createSecureServer(selfSignedCert, httpRouter); // use certFiles if u used that before
