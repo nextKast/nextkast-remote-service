@@ -51,13 +51,16 @@ everything before applys but you skip step 4
 ```js
 const httpRouter = HttpRouter();
 httpRouter.get('/favicon.ico', (req) => req.res?.status(204).end()); // Disable favicon
-httpRouter.use('/livemic',HttpRouter.static('./public')); // Will serve everything that is in the public subfolder of this service.
-httpRouter.use('/', (req) => proxyServer.web(req, req?.res); // Will serve everything that is returned by nextKast MobileVT
+
+httpRouter.use('/', (req) => proxyServer.web(req, req?.res)); // Will serve everything that is returned by nextKast MobileVT
 
 // Single Page Apps are also supported please ask the support about that.
-const httpsServer = createSecureServer(selfSignedCert, httpRouter); // use certFiles if u used that before
-const webSocketServer = new WebSocketServer(httpServer);
-const liveMic = webSocketServer.of('/livemic');
+const httpsServer = createSecureServer(selfSignedCert, httpRouter); // use certFiles if u used that before exposes https://
+const webSocketServer = new WebSocketServer(httpsServer); // exposes wss://
+
+// Creates a Bidirectional unfiltered Channel Between all users of the wss://<host:port>/livemic url 
+httpRouter.use('/livemic',HttpRouter.static('./public/livemic')); // Will serve everything that is in the public subfolder of this service. Or what is packed with the service
+const liveMic = webSocketServer.of('/livemic'); 
 liveMic.on('connect',  (/** @type {Socket} */ stream) => {
     stream.on('message', (data) => {
         console.log(`${stream.id}:message: `, data);
