@@ -25,7 +25,7 @@ const certFiles = {
 
 step 3. after that configure the Proxy for nextKast BX
 ```js
-httpProxy.createServer({
+const proxyServer = httpProxy.createServer({
     target: { 
         host: 'localhost', 
         port: 9009 
@@ -33,17 +33,27 @@ httpProxy.createServer({
     ssl: selfSignedCert, // or use certFiles here depending on what u did choose
     ws: true,
     secure: false,
-}).listen(8009);
+})
 ```
+
+step 4. listen on a port skip that step if you plan to use LiveMic
+
+```js
+proxyServer.listen(8009);
+```
+
+
 Thats all needed to replace Nginx in nextKast BX
 
 ## Advanced Configuration Including liveMic Support
 
-everything before applys but you skip step 3
+everything before applys but you skip step 4
 ```js
 const httpRouter = HttpRouter();
 httpRouter.get('/favicon.ico', (req) => req.res?.status(204).end()); // Disable favicon
-httpRouter.use('/',HttpRouter.static('./public')); // Will serve everything that is in the public subfolder of this service.
+httpRouter.use('/livemic',HttpRouter.static('./public')); // Will serve everything that is in the public subfolder of this service.
+httpRouter.use('/', (req) => httpProxy.web(req, req?.res); // Will serve everything that is returned by nextKast MobileVT
+
 // Single Page Apps are also supported please ask the support about that.
 const httpsServer = createSecureServer(selfSignedCert, httpRouter); // use certFiles if u used that before
 const webSocketServer = new WebSocketServer(httpServer);
