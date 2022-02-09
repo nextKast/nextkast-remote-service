@@ -48,6 +48,12 @@ httpRouter.use('/',HttpRouter.static('./public')); // Will serve everything that
 const httpsServer = createSecureServer(selfSignedCert, httpRouter); // use certFiles if u used that before
 const webSocketServer = new WebSocketServer(httpServer);
 const liveMic = webSocketServer.of('/livemic');
+liveMic.on('connect',  (/** @type {Socket} */ stream) => {
+    stream.on('message', (data) => {
+        console.log(`${stream.id}:message: `, data);
+        stream.broadcast.emit('message', data); 
+    });
+});
 
 ```
 
